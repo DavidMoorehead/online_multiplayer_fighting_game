@@ -1,0 +1,807 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">  <!-- In Future, Remove Temp Div and having userUIDs there. No need and may cause future problems-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIP Game</title>
+  
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        .Game_Grid {
+            top: 0%;
+            left: 0%;
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+        }
+        .no-scroll {
+            touch-action: none;
+        }
+  .close_character{
+    
+  }
+  .other_player{
+    position: absolute;
+    display: inline;
+  }
+    </style>
+
+<script src="https://cdn.jsdelivr.net/npm/simple-peer@9.11.1/simplepeer.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>   <!-- peerJs for web socket to connect p2p -->
+
+</head>
+
+<body>
+  
+  
+<!-- Add Firebase SDK -->
+    <script type="module">
+  
+  
+		document.title = "v 0.0013";
+	
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, query, where, getDocs, getDoc, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+
+        // Initialize Firebase app
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSNZ8hiUQNhMmzCvxIw35vYuUPaqw32nY",
+            authDomain: "spheric-crowbar-413501.firebaseapp.com",
+            projectId: "spheric-crowbar-413501",
+            storageBucket: "spheric-crowbar-413501.appspot.com",
+            messagingSenderId: "201052856259",
+            appId: "1:201052856259:web:30a58c5cd284143f67e776",
+            measurementId: "G-B2YWS6YBHW"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        const game_grid = document.getElementById("game_grid");
+        var myuid = "";
+  
+		
+		
+		
+		var player_search_match = null; 
+		
+		
+  
+        // Function to sign in with Google
+        async function processInfo2(userUid) {
+		
+		//load game moves and assign to div
+		var move_database = document.createElement('div');
+		move_database.setAttribute("id", "move_database");
+		
+		document.body.appendChild(move_database);
+		
+		try {
+				const docRef = collection(db, "moveInfo");
+				const docSnapshot = await getDocs(docRef);
+				
+				const docs = docSnapshot.docs;
+				
+				docs.forEach(doc => {
+					if(doc.id == "grab_database"){
+						const docData = doc.data();
+				const docFields = Object.keys(docData);
+				var field_counter = 0;
+				//loop for connecting to each user
+				 docFields.forEach(field => {
+					if (Array.isArray(docData[field]) && docData[field].length >1) { //base damage, 
+					move_database.setAttribute("move_" + "grab_" + field_counter, field); //puts name first 
+					var temp = "move_" + "grab_" + field_counter;
+					
+					var counter = 0;
+					while(counter < docData[field].length){
+
+						move_database.setAttribute(temp, move_database.getAttribute(temp) + "," + docData[field][counter]);
+						counter+=1;
+
+					}
+					}
+					
+					
+					
+					field_counter+=1;
+					});
+					
+
+					}
+				});
+
+				
+			}catch(error){
+				alert(error);
+			}
+		
+		
+		//load user and other players	
+			myuid = userUid;
+
+			var player_search_counter = 0;
+			 // Initialize as null, not "null"
+
+			try {
+				const docRef = collection(db, "userInfo");
+				const docSnapshot = await getDocs(docRef);
+				
+				const docs = docSnapshot.docs;
+
+				// Loop through each document to find if userUid exists
+				docs.forEach(doc => {
+					if (userUid in doc.data()) {
+						player_search_match = player_search_counter;
+					
+					  const docData = doc.data();
+					  gameplay_startup(docData[userUid]);
+					} 
+					
+					player_search_counter+=1;
+				});
+
+				// If player_search_match is still null, find an open spot
+			  var break_check = false;
+				if (player_search_match == null) {
+					docs.forEach(doc => {
+						const data = doc.data();
+						if (data.open == true && break_check == false) {
+							const newData = {
+								[userUid]: [0,0,"", peer.id]// x, y, inputs, peer Id
+							};
+						
+						 
+							const docRefToUpdate = doc.ref; // Get the reference of the document to update
+							updateDoc(docRefToUpdate, newData);
+						  
+						  			break_check = true;
+						  player_search_match = player_search_counter;
+							gameplay_startup([0,0]);
+						}
+					player_search_counter+=1;
+					});
+				} else {
+					// Handle the case when player_search_match is not null (player exists)
+					
+					
+				}
+				
+			  docs.forEach(doc => {
+				 const docData = doc.data();
+				const docFields = Object.keys(docData);
+				//loop for connecting to each user
+				 docFields.forEach(field => {
+					if (Array.isArray(docData[field]) && field !== userUid && docData[field].length >= 4) {
+											player_array.push(field +","+ docData[field][3] +","+  docData[field][0] +","+  docData[field][1]); //puts their info into an array
+					}
+				});
+					  
+					  });
+
+		
+		
+		
+
+
+			} catch (error) {
+				alert(error);
+			}
+		}
+
+
+          
+        function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
+                .then((result) => {
+                    const user = result.user;
+                    console.log(user);
+                    
+                    for (var key in user) {       					
+                        if (key == "uid") {
+                            processInfo(user[key]);
+                        }	
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+
+        // Attach click event handler to the button after the DOM is loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            const button = document.getElementById("signInButton");
+            button.addEventListener("click", signInWithGoogle);
+        });
+
+        // Assuming you have imported necessary Firebase Storage functions like ref and getDownloadURL
+        function loadAndExecuteScript(url) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = url;
+                script.type = 'text/javascript';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.body.appendChild(script);
+            });
+        }
+		
+		
+		
+
+        //This loads all the scripts once user has signed in
+        async function gameplay_startup(pos_array) {
+		
+            try {
+                var scriptRef = ref(storage, 'scripts/input_tracker.js');
+                var scriptURL = await getDownloadURL(scriptRef);
+                await loadAndExecuteScript(scriptURL);
+				
+                
+              scriptRef = ref(storage, 'scripts/animations_script.js');
+                 scriptURL = await getDownloadURL(scriptRef);
+                await loadAndExecuteScript(scriptURL);
+				
+				
+			   scriptRef = ref(storage, 'scripts/assign_move_values.js');
+                 scriptURL = await getDownloadURL(scriptRef);
+                await loadAndExecuteScript(scriptURL);
+                
+              
+              scriptRef = ref(storage, 'scripts/p2p_sending_script.js');
+                 scriptURL = await getDownloadURL(scriptRef);
+                await loadAndExecuteScript(scriptURL);
+              
+              ping_update_loop(); //updates ping connections with all peers
+         
+                          
+              
+              scriptRef = ref(storage, 'scripts/gameplay_startup.js');
+                 scriptURL = await getDownloadURL(scriptRef);
+                await loadAndExecuteScript(scriptURL);
+                
+				
+                scriptRef = ref(storage, 'scripts/move_creator.js');
+                 scriptURL = await getDownloadURL(scriptRef);
+                await loadAndExecuteScript(scriptURL);
+			  
+			  
+            
+                load_map_position(pos_array);
+                
+            } catch (error) {
+                console.error('Error loading script from Firebase Storage:', error);
+                document.body.innerText = error;
+            }
+          
+            try{
+                scriptRef = ref(storage, 'admin/admin_menu.js');
+              scriptURL = await getDownloadURL(scriptRef);
+              await loadAndExecuteScript(scriptURL);
+            }
+          catch(error){
+            console.log(error);
+          }
+          
+          
+          
+          
+          setTimeout(() => {
+         load_players(0); //start at 0 for array counter
+      }, 4000);
+        }
+
+
+        // Function to load map position for user
+        function load_map_position(pos_array) {
+			custom_map_pos(pos_array[0], pos_array[1], "player");
+        }
+
+
+
+  
+  
+  
+  
+  
+		var player_array = []; //uid, peer.id, xpos, ypos
+		function load_players(array_counter){
+
+		  			while(player_array.length >array_counter){
+			  
+			var info_array = player_array[array_counter].split(",");
+			
+			  
+			var uid = info_array[0];
+			var uid_peer_id = info_array[1];
+			
+			
+			
+			
+			create_player(uid_peer_id, "other_player", 5, 10, 50, 50);
+			var test_player = document.getElementById(uid_peer_id);
+			var x_value = parseInt(info_array[2])*-1;
+			var y_value = parseInt(info_array[3])*-1;
+			
+			test_player.style.top = (y_value +50)+"vh";
+		  
+			test_player.style.left = (x_value+50)+"vw";
+			test_player.setAttribute("uid", uid);
+		  			  
+		  			  test_player.setAttribute("x_value", x_value);  			  
+		  			  test_player.setAttribute("y_value", y_value);
+		  			  
+		 test_player.classList.add("other_player");
+		 test_player.setAttribute("ping", 100);
+		 
+		 
+		 //default player stats
+		 
+		test_player.setAttribute("status", "loading"); //default state, can do any actions
+		test_player.setAttribute("frames", 0); //frames that are applied and used for either counting down until freedom, or how long you have until you can attack/move
+	
+		 test_player.setAttribute("mhealth", 100);
+		 test_player.setAttribute("health", 100);
+		 
+		 test_player.setAttribute("moves_validated", "no");
+		 	 test_player.setAttribute("historical_inputs", "");
+		 	 
+		 	 test_player.setAttribute("historical_inputs_pos_ref", "");
+		  test_player.setAttribute("connection_priority", "receiver");
+		 
+		 // All the controls processed here
+			//controls for attacks - button 0
+			test_player.setAttribute("n_button_0", "button 0 5 for testing"); //n
+			test_player.setAttribute("dl_button_0", "no"); //dl
+
+			test_player.setAttribute("d_button_0", "null"); //d
+			test_player.setAttribute("dr_button_0", "null"); //dr
+
+			test_player.setAttribute("l_button_0", "null"); //l
+			test_player.setAttribute("r_button_0", "null"); //r
+
+			test_player.setAttribute("ul_button_0", "null"); //ul
+			test_player.setAttribute("u_button_0", "null"); //u
+
+			test_player.setAttribute("ur_button_0", "null"); //ur
+
+			//controls for attacks - button 1
+			test_player.setAttribute("n_button_1", "null"); //n
+			test_player.setAttribute("dl_button_1", "null"); //dl
+
+			test_player.setAttribute("d_button_1", "null"); //d
+			test_player.setAttribute("dr_button_1", "null"); //dr
+
+			test_player.setAttribute("l_button_1", "null"); //l
+			test_player.setAttribute("r_button_1", "null"); //r
+
+			test_player.setAttribute("ul_button_1", "null"); //ul
+			test_player.setAttribute("u_button_1", "null"); //u
+
+			test_player.setAttribute("ur_button_1", "null"); //ur
+
+			//controls for attacks - button 2
+			test_player.setAttribute("n_button_2", "null"); //n
+			test_player.setAttribute("dl_button_2", "null"); //dl
+
+			test_player.setAttribute("d_button_2", "null"); //d
+			test_player.setAttribute("dr_button_2", "null"); //dr
+
+			test_player.setAttribute("l_button_2", "null"); //l
+			test_player.setAttribute("r_button_2", "null"); //r
+
+			test_player.setAttribute("ul_button_2", "null"); //ul
+			test_player.setAttribute("u_button_2", "null"); //u
+
+			test_player.setAttribute("ur_button_2", "null"); //ur
+
+			
+			
+			//controls for grabs
+			//controls for grab attacks - button 0
+			test_player.setAttribute("grab_5_button_0", "null"); //n
+			test_player.setAttribute("grab_1_button_0", "null"); //dl
+			
+			test_player.setAttribute("grab_2_button_0", "null"); //d
+			test_player.setAttribute("grab_3_button_0", "null"); //dr
+			
+			test_player.setAttribute("grab_4_button_0", "null"); //l
+			test_player.setAttribute("grab_6_button_0", "null"); //r
+			
+			test_player.setAttribute("grab_7_button_0", "null"); //ul
+			test_player.setAttribute("grab_8_button_0", "null"); //u
+			
+			test_player.setAttribute("grab_9_button_0", "null"); //ur
+			
+			
+			//controls for grab attacks - button 1
+			test_player.setAttribute("grab_5_button_1", "null"); //n
+			test_player.setAttribute("grab_1_button_1", "null"); //dl
+			
+			test_player.setAttribute("grab_2_button_1", "null"); //d
+			test_player.setAttribute("grab_3_button_1", "null"); //dr
+			
+			test_player.setAttribute("grab_4_button_1", "null"); //l
+			test_player.setAttribute("grab_6_button_1", "null"); //r
+			
+			test_player.setAttribute("grab_7_button_1", "null"); //ul
+			test_player.setAttribute("grab_8_button_1", "null"); //u
+			
+			test_player.setAttribute("grab_9_button_1", "null"); //ur
+			
+			
+			//controls for grab attacks - button 2
+			test_player.setAttribute("grab_5_button_2", "null"); //n
+			test_player.setAttribute("grab_1_button_2", "null"); //dl
+			
+			test_player.setAttribute("grab_2_button_2", "null"); //d
+			test_player.setAttribute("grab_3_button_2", "null"); //dr
+			
+			test_player.setAttribute("grab_4_button_2", "null"); //l
+			test_player.setAttribute("grab_6_button_2", "null"); //r
+			
+			test_player.setAttribute("grab_7_button_2", "null"); //ul
+			test_player.setAttribute("grab_8_button_2", "null"); //u
+			
+			test_player.setAttribute("grab_9_button_2", "null"); //ur
+			
+			//controls for being hit
+		  		test_player.setAttribute("onhit_button_0", "null"); //defense tool 1
+				test_player.setAttribute("onhit_button_1", "null"); //defense tool 2	
+				
+				test_player.setAttribute("onhit_button_2", "null"); //defense tool 3	
+				
+		  			test_player.setAttribute("base_grab", 5); //5* 200ms base = 1s
+	   test_player.setAttribute("status_by", "username" + "," + "grab" +"," + Date.now());
+		        
+		  			  
+		connect(uid_peer_id);
+			array_counter+=1;
+			}
+		}
+		
+  
+  
+  
+  
+  
+ 
+	
+	function processInfo(userUid){
+		// Delayed setup after 2 seconds to ensure peer.id is available
+		setTimeout(() => {
+
+		  setup(); // Call setup function after displaying peer ID
+		   processInfo2(userUid)
+		   game_grid.setAttribute("peer_id", peer.id);
+		}, 5000); //2 second delay to connet to server
+	}
+  
+  
+  
+  
+  // Net codd stars here
+    var peer = new Peer();
+    
+    
+
+
+    // Function to initiate connection
+    function connect(other_peer) {
+
+
+      var other_player = document.getElementById(other_peer);
+      if(other_player == null){//if they dont exists, create them same as load_players im just being lazy here
+        
+
+      create_player(other_peer, "other_player", 5, 10, 50, 50);
+    var test_player = document.getElementById(other_peer);
+			var x_value = 0;
+			var y_value = 0;
+			
+			test_player.style.top = (y_value +50)+"vh";
+		  
+			test_player.style.left = (x_value+50)+"vw";
+			test_player.setAttribute("uid", "unknown");
+		  			  
+		  			  test_player.setAttribute("x_value", x_value);  			  
+		  			  test_player.setAttribute("y_value", y_value);
+		  			  
+		 test_player.classList.add("other_player");
+		  test_player.setAttribute("ping", 100);
+		  
+		  
+		  
+		  	test_player.setAttribute("status", "loading"); //default state, can do any actions
+		test_player.setAttribute("frames", 0); //frames that are applied and used for either counting down until freedom, or how long you have until you can attack/move
+	
+		 test_player.setAttribute("mhealth", 100);
+		 test_player.setAttribute("health", 100);
+		 
+		 test_player.setAttribute("moves_validated", "no");
+		 test_player.setAttribute("historical_inputs", "");
+		 
+ 	 	 test_player.setAttribute("historical_inputs_pos_ref", "");
+		 		  test_player.setAttribute("connection_priority", "sender");
+		 
+		 // All the controls processed here
+			//controls for attacks - button 0
+			test_player.setAttribute("n_button_0", "button 0 5 for testing"); //n
+			test_player.setAttribute("dl_button_0", "no"); //dl
+
+			test_player.setAttribute("d_button_0", "null"); //d
+			test_player.setAttribute("dr_button_0", "null"); //dr
+
+			test_player.setAttribute("l_button_0", "null"); //l
+			test_player.setAttribute("r_button_0", "null"); //r
+
+			test_player.setAttribute("ul_button_0", "null"); //ul
+			test_player.setAttribute("u_button_0", "null"); //u
+
+			test_player.setAttribute("ur_button_0", "null"); //ur
+
+			//controls for attacks - button 1
+			test_player.setAttribute("n_button_1", "null"); //n
+			test_player.setAttribute("dl_button_1", "null"); //dl
+
+			test_player.setAttribute("d_button_1", "null"); //d
+			test_player.setAttribute("dr_button_1", "null"); //dr
+
+			test_player.setAttribute("l_button_1", "null"); //l
+			test_player.setAttribute("r_button_1", "null"); //r
+
+			test_player.setAttribute("ul_button_1", "null"); //ul
+			test_player.setAttribute("u_button_1", "null"); //u
+
+			test_player.setAttribute("ur_button_1", "null"); //ur
+
+			//controls for attacks - button 2
+			test_player.setAttribute("n_button_2", "null"); //n
+			test_player.setAttribute("dl_button_2", "null"); //dl
+
+			test_player.setAttribute("d_button_2", "null"); //d
+			test_player.setAttribute("dr_button_2", "null"); //dr
+
+			test_player.setAttribute("l_button_2", "null"); //l
+			test_player.setAttribute("r_button_2", "null"); //r
+
+			test_player.setAttribute("ul_button_2", "null"); //ul
+			test_player.setAttribute("u_button_2", "null"); //u
+
+			test_player.setAttribute("ur_button_2", "null"); //ur
+
+			
+			
+			//controls for grabs
+			//controls for grab attacks - button 0
+			test_player.setAttribute("grab_5_button_0", "null"); //n
+			test_player.setAttribute("grab_1_button_0", "null"); //dl
+			
+			test_player.setAttribute("grab_2_button_0", "null"); //d
+			test_player.setAttribute("grab_3_button_0", "null"); //dr
+			
+			test_player.setAttribute("grab_4_button_0", "null"); //l
+			test_player.setAttribute("grab_6_button_0", "null"); //r
+			
+			test_player.setAttribute("grab_7_button_0", "null"); //ul
+			test_player.setAttribute("grab_8_button_0", "null"); //u
+			
+			test_player.setAttribute("grab_9_button_0", "null"); //ur
+			
+			
+			//controls for grab attacks - button 1
+			test_player.setAttribute("grab_5_button_1", "null"); //n
+			test_player.setAttribute("grab_1_button_1", "null"); //dl
+			
+			test_player.setAttribute("grab_2_button_1", "null"); //d
+			test_player.setAttribute("grab_3_button_1", "null"); //dr
+			
+			test_player.setAttribute("grab_4_button_1", "null"); //l
+			test_player.setAttribute("grab_6_button_1", "null"); //r
+			
+			test_player.setAttribute("grab_7_button_1", "null"); //ul
+			test_player.setAttribute("grab_8_button_1", "null"); //u
+			
+			test_player.setAttribute("grab_9_button_1", "null"); //ur
+			
+			
+			//controls for grab attacks - button 2
+			test_player.setAttribute("grab_5_button_2", "null"); //n
+			test_player.setAttribute("grab_1_button_2", "null"); //dl
+			
+			test_player.setAttribute("grab_2_button_2", "null"); //d
+			test_player.setAttribute("grab_3_button_2", "null"); //dr
+			
+			test_player.setAttribute("grab_4_button_2", "null"); //l
+			test_player.setAttribute("grab_6_button_2", "null"); //r
+			
+			test_player.setAttribute("grab_7_button_2", "null"); //ul
+			test_player.setAttribute("grab_8_button_2", "null"); //u
+			
+			test_player.setAttribute("grab_9_button_2", "null"); //ur
+			
+			//controls for being hit
+		  		test_player.setAttribute("onhit_button_0", "null"); //defense tool 1
+				test_player.setAttribute("onhit_button_1", "null"); //defense tool 2	
+				
+				test_player.setAttribute("onhit_button_2", "null"); //defense tool 3	
+					test_player.setAttribute("base_grab", 5); //5* 200ms base = 1s
+	   test_player.setAttribute("status_by", "username" + "," + "grab" +"," + Date.now());
+		    
+        
+      }else{
+        if(other_player.conn == null){
+        try{
+         
+      // Connect to the specified Peer
+      var conn = peer.connect(other_peer);
+        other_player.conn = conn;
+          
+     // Event listener for when connection is open
+      conn.on('open', function() {
+        // Here you can send data to the connected peer
+        other_player.conn = conn;
+        
+        setTimeout(() => {
+        other_player.conn.send("ping_update" + ","+Date.now());
+        },5000);
+
+      });
+	  }catch(error){
+		
+	  }
+      } 
+      }
+    
+    }
+    
+    
+
+    
+
+
+  
+
+    function setup() {
+      // Event listener for incoming connections
+      peer.on('connection', function(conn) {
+        // Event listener for incoming data
+        conn.on('data', function(data) {
+          
+          
+         
+          connect(conn.peer);// creates two way connection
+          
+		  
+         
+          var conn_player = document.getElementById(conn.peer);
+		  var data_array = data.split(",");
+
+        
+          
+          var ping_mod = 100;
+          if(conn_player.getAttribute("ping")!= null){
+            ping_mod = parseInt(conn_player.getAttribute("ping"));
+          }
+		  
+
+			 
+		  
+		  
+		  
+	    if(data_array[0] == "ping_request"){
+	      conn_player.conn.send("ping_returned" + "," + data_array[1]);
+	    } else if(data_array[0] == "ping_returned"){
+	      var sent_time = parseInt(conn_player.getAttribute("ping_request_time"));
+	      conn_player.setAttribute("ping", parseInt(Date.now())-sent_time);
+	        
+	    } 
+		
+		
+		
+		
+		 else if(data_array[0] == "request_move_validation"){
+			send_move_validation(conn_player);
+		}
+		
+		
+		
+		 
+				
+		if(conn_player.getAttribute("moves_validated") == "no"){ //if moves arent processed, process them or request validation
+			if(data_array[0] == "moves_to_validate"){
+				requested_move_validation(conn_player, data_array);
+			} else{
+				conn_player.conn.send("request_move_validation"+"," + "nothing here");
+			
+			}
+		  
+		}else if(conn_player.getAttribute("moves_validated") == "yes"){ //process their info only if their moves have been validated to be legitimate
+		
+				if(data_array[0] == "conn_input"){
+				  
+					process_input(conn, data_array,0);
+				} else if(data_array[0] == "gamestate_validation"){
+				    
+				    process_input(conn, data_array,1);
+				}
+				
+				  
+				
+			}
+
+			  
+          
+        }); //end of functions function
+      });
+    } 
+  
+  
+	function process_input(conn, data_array, type){
+	 var player = document.getElementById(conn.peer);
+	 if(type == 0){   //movement or attack animations
+    player.setAttribute("historical_inputs", player.getAttribute("historical_inputs") + "," + data_array[1] + "@" +data_array[2] + "@" + data_array[3]+ "#" + data_array[4]);
+	  player.setAttribute("historical_inputs_pos_ref", player.getAttribute("historical_inputs_pos_ref") + "," + game_grid.getAttribute("x_pos")+ "#" + game_grid.getAttribute("y_pos"));
+	  
+	 
+	  
+	  var temp_array = data_array[3].split("#");
+	  
+	   
+	   while(player.classList.length>0){
+	       player.classList.remove(player.classList[0]);
+	   }
+	     player.classList.add("other_player");
+	   player.classList.add("other_mob_map_pos_" + temp_array[0] + "," + temp_array[1]);
+	  
+	  
+	  if(player.getAttribute("status") == "loading"){
+	    player.setAttribute("status", "default");
+	  }
+	 move_other_player(temp_array[0], temp_array[1], conn.peer);
+	}
+	
+	    
+	    else if(type==1){
+	        
+	        if(game_grid.getAttribute("status")== data_array[1]){
+	            document.body.innerHTML("worked!!");
+	        }else{
+	            document.body.innerHTML("failed");
+	        }
+	    }
+	}
+  
+  
+  
+  
+  
+  
+    </script>
+  
+
+    <!-- HTML content -->
+    <div id="game_grid">
+        <button id="signInButton">Sign in with Google</button>
+    </div>
+	
+	
+	
+	  <!-- Textarea for entering peer ID to connect -->
+  </body>
+</html>
