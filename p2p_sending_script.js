@@ -115,7 +115,14 @@ function ping_update_loop(){
 
 
 function send_and_process_attack(){
-
+	if(game_grid.getAttribute("status") == "grabbing"){
+	
+	
+		alert("you used " + result);
+		
+	}else{
+		//this is for defensive abilities when being grabbed
+	}
 
 
 }
@@ -130,7 +137,7 @@ function grab_check(result){ //this is only for 1v1 grabs. For multiple grabs yo
   try{
     
       var my_x = parseInt(game_grid.getAttribute("x_pos")); 
-var my_y = parseInt(game_grid.getAttribute("y_pos"));
+	var my_y = parseInt(game_grid.getAttribute("y_pos"));
 
     
      var result_counter = 0;
@@ -235,12 +242,15 @@ var my_y = parseInt(game_grid.getAttribute("y_pos"));
 
 function top_grab_result(player){
   //im grabbed
+
     game_grid.setAttribute("status", "grabbed");
+	  game_grid.setAttribute("status_by", ("player,grabbed,"+Date.now()));
     if(player.getAttribute("connection_priority")=="receiver"){
         
         player.conn.send("gamestate_validation"+","+"grabbing");
         
     }
+
 }
 
 function neutral_grab_result(player){
@@ -249,9 +259,12 @@ function neutral_grab_result(player){
 }
 
 function bottom_grab_result(player){
+
   game_grid.setAttribute("status", "grabbing");
-if(player.getAttribute("connection_priority")=="receiver"){
+  game_grid.setAttribute("status_by", ("player,grabbing,"+Date.now()));
+	if(player.getAttribute("connection_priority")=="receiver"){
         
         player.conn.send("gamestate_validation"+","+"grabbed");
     }
+
 }

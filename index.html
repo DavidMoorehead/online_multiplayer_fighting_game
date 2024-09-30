@@ -3,6 +3,9 @@
 
 
 
+
+
+
 <!DOCTYPE html>
 <html lang="en">  <!-- In Future, Remove Temp Div and having userUIDs there. No need and may cause future problems-->
 <head>
@@ -73,7 +76,8 @@
 
         const game_grid = document.getElementById("game_grid");
         var myuid = "";
-  
+		var my_doc_location;
+
 		
 		
 		
@@ -83,7 +87,7 @@
   
         // Function to sign in with Google
         async function processInfo2(userUid) {
-		
+	
 		//load game moves and assign to div
 		var move_database = document.createElement('div');
 		move_database.setAttribute("id", "move_database");
@@ -132,7 +136,7 @@
 		
 		
 		//load user and other players	
-			myuid = userUid;
+			myuid = userUid; //mainly a reference used for later, but it has to be set somewhere so here it is 
 
 			var player_search_counter = 0;
 			 // Initialize as null, not "null"
@@ -149,7 +153,17 @@
 						player_search_match = player_search_counter;
 					
 					  const docData = doc.data();
-					  gameplay_startup(docData[userUid]);
+					  
+					  var last_position = localStorage.getItem('stored_position').split(","); 
+		        if(docData[userUid][0] != last_position[0] && docData[userUid][1] != last_position[1]){
+		          alert(docData[userUid] + " != " + last_position);
+		          //just updates position. If they wanna cheat for now, they can cheat locally.
+		          //but in future use input tracker to prevent cheating. But it's for their solo gameplay
+		          //so if not its really nbd
+		          
+		        }
+					  gameplay_startup(last_position);
+					  my_doc_location = doc.ref; //sets doc location for use later inside module scripts
 					} 
 					
 					player_search_counter+=1;
@@ -163,6 +177,7 @@
 						if (data.open == true && break_check == false) {
 							const newData = {
 								[userUid]: [0,0,"", peer.id]// x, y, inputs, peer Id
+					
 							};
 						
 						 
@@ -171,15 +186,13 @@
 						  
 						  			break_check = true;
 						  player_search_match = player_search_counter;
+						  
 							gameplay_startup([0,0]);
+									  my_doc_location = doc.ref; //sets doc location for use later inside module scripts
 						}
 					player_search_counter+=1;
 					});
-				} else {
-					// Handle the case when player_search_match is not null (player exists)
-					
-					
-				}
+				}  
 				
 			  docs.forEach(doc => {
 				 const docData = doc.data();
@@ -283,6 +296,7 @@
 			  
             
                 load_map_position(pos_array);
+	
                 
             } catch (error) {
                 console.error('Error loading script from Firebase Storage:', error);
@@ -304,6 +318,10 @@
           setTimeout(() => {
          load_players(0); //start at 0 for array counter
       }, 4000);
+	  
+	  setTimeout(() => { //delays initial so they cant spam logins and writes to cost money
+        save_server_pos();
+        },300000); //5 mins per update
         }
 
 
@@ -484,6 +502,9 @@
 	
 	function processInfo(userUid){
 		// Delayed setup after 2 seconds to ensure peer.id is available
+		var google_button = document.getElementById("signInButton");
+		google_button.remove();
+
 		setTimeout(() => {
 
 		  setup(); // Call setup function after displaying peer ID
@@ -737,7 +758,8 @@
 				  
 					process_input(conn, data_array,0);
 				} else if(data_array[0] == "gamestate_validation"){
-				    
+		
+	   
 				    process_input(conn, data_array,1);
 				}
 				
@@ -780,16 +802,34 @@
 	    else if(type==1){
 	        
 	        if(game_grid.getAttribute("status")== data_array[1]){
-	            document.body.innerHTML("worked!!");
+	            		    //not sure if i need this yet, so just leaving it here if logic requires it in the future
 	        }else{
-	            document.body.innerHTML("failed");
+	          		    game_grid.setAttribute("status") == data_array[1];
+						  game_grid.setAttribute("status_by", ("player," + data_array[1] + ","+Date.now()));
+						  alert("set status to " + game_grid.getAttribute("status"));
 	        }
 	    }
 	}
+	
+	
+	
+	
+	function save_server_pos(){
+		
+			const newData = {
+			[myuid]: [game_grid.getAttribute("x_pos"),game_grid.getAttribute("y_pos"),"", peer.id]// x, y, inputs, peer Id
+
+		};
+
+		updateDoc(my_doc_location, newData);
+		
+			  setTimeout(() => { //delays initial so they cant spam logins and writes to cost money
+        save_server_pos();
+        },300000); //5 mins per update
+	}
   
   
-  
-  
+
   
   
     </script>

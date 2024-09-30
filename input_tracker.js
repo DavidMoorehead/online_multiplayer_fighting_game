@@ -14,15 +14,10 @@ const elapsedTime = currentTime - pageLoadTime;
       current_inputs.shift();
       current_inputs.push(result + "@" + Date.now() + "@"+game_grid.getAttribute("x_pos") + "#" + game_grid.getAttribute("y_pos"));
     }
-    
-    localStorage.setItem('input_tracker', historical_inputs);
 
-    if(result == "button_2" ){
-        alert(historical_inputs);
-    }
-    if(result == "button_1"){
-      alert(current_inputs);
-    }
+    localStorage.setItem('input_tracker', historical_inputs);
+    	localStorage.setItem('stored_position', (game_grid.getAttribute("x_pos")+","+game_grid.getAttribute("y_pos"))); 
+		
 }
 
 // Time when the page started loading
@@ -52,6 +47,7 @@ function status_check_loop(){
   //since current maximum for status effect is 2s
   
   if(current_time - last_state_time >=2){
+
     game_grid.setAttribute("status", "default");
   }
   

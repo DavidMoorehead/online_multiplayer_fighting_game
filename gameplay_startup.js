@@ -200,9 +200,11 @@ var send_lock = false;
 			base_movement_animation(result);
 			  player_movement(result);
         send_lock = false;
+		
+		if(game_grid.getAttribute("status") == "walking"){
 	    game_grid.setAttribute("status", "default");
 		               game_grid.setAttribute("status_by", ("player,walking_reset,"+Date.now()));
-  	        
+		}
 			action_delay_processor(event);
 		
        	
@@ -217,18 +219,17 @@ var send_lock = false;
 		
 		
 		
-		if(isAttackDown == true && game_grid.getAttribute("status") == "default"){
-    game_grid.setAttribute("status", "attacking");
-		           game_grid.setAttribute("status_by", "player,attacking_start,"+Date.now());
+		if(isAttackDown == true && (game_grid.getAttribute("status") == "default" || game_grid.getAttribute("status") == "grabbing")){
+    
   	  	input_tracker_update(result);
 		  process_data_to_send("attack");
 
 			timeout_Id = setTimeout(function() {
-			  	
+			  	isAttackDown = false;
+				action_delay_processor(event);
 			  //put animation process here
-		
-    game_grid.setAttribute("status", "default");
-			           game_grid.setAttribute("status_by", "player,attack_reset,"+Date.now());
+				//removed changing status for now since grabbing attacks and default attacks are different
+   
   	        
 		}, 100);
 		
