@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Title Here</title>
+
+</head>
+<body>
+
+	<script>
+	
+	
+	
+
+	var game_grid = document.createElement('div');
+	game_grid.setAttribute("n_button_0", "button 0 5 for testing"); //n
+game_grid.setAttribute("dl_button_0", "no"); //dl
+
+game_grid.setAttribute("d_button_0", "null"); //d
+game_grid.setAttribute("dr_button_0", "null"); //dr
+
+game_grid.setAttribute("l_button_0", "null"); //l
+game_grid.setAttribute("r_button_0", "null"); //r
+
+game_grid.setAttribute("ul_button_0", "null"); //ul
+game_grid.setAttribute("u_button_0", "null"); //u
+
+game_grid.setAttribute("ur_button_0", "null"); //ur
+
+//controls for attacks - button 1
+game_grid.setAttribute("n_button_1", "null"); //n
+game_grid.setAttribute("dl_button_1", "null"); //dl
+
+game_grid.setAttribute("d_button_1", "null"); //d
+game_grid.setAttribute("dr_button_1", "null"); //dr
+
+game_grid.setAttribute("l_button_1", "null"); //l
+game_grid.setAttribute("r_button_1", "null"); //r
+
+game_grid.setAttribute("ul_button_1", "null"); //ul
+game_grid.setAttribute("u_button_1", "null"); //u
+
+game_grid.setAttribute("ur_button_1", "null"); //ur
+
+//controls for attacks - button 2
+game_grid.setAttribute("n_button_2", "null"); //n
+game_grid.setAttribute("dl_button_2", "null"); //dl
+
+game_grid.setAttribute("d_button_2", "null"); //d
+game_grid.setAttribute("dr_button_2", "null"); //dr
+
+game_grid.setAttribute("l_button_2", "null"); //l
+game_grid.setAttribute("r_button_2", "null"); //r
+
+game_grid.setAttribute("ul_button_2", "null"); //ul
+game_grid.setAttribute("u_button_2", "null"); //u
+
+game_grid.setAttribute("ur_button_2", "null"); //ur
+
+//controls for grabs
+//controls for grab attacks - button 0
+game_grid.setAttribute("grab_button_0", "null"); //n
+game_grid.setAttribute("grab_button_1", "null"); //dl
+
+game_grid.setAttribute("grab_button_2", "null"); //d
+//controls for being hit
+game_grid.setAttribute("onhit_button_0", "null"); //defense tool 1
+game_grid.setAttribute("onhit_button_1", "null"); //defense tool 2
+
+game_grid.setAttribute("onhit_button_2", "null"); //defense tool 3
+game_grid.setAttribute("base_grab", 5); //5* 200ms base = 1s
+
+	
+	var move_list = document.createElement('div');
+	move_list.setAttribute("id", "move_database");
+	
+	
+	
+	//move data, base damage, distance -vh+vh, distance -vw+vw, anim time, stun time, name
+	move_list.setAttribute("move_attack_0", "0, 10, 0, 5, 2, 5, 450, 400, Jab");
+	
+	
+	//grab data, base damage, time in ms, ends grab, name
+	move_list.setAttribute("move_grab_0","3,500,false, Gut_Punch");
+	document.body.appendChild(move_list);
+
+//for db, array is = name, starting damage
+//total value for any move = 
+
+
+function grab_creator(grab_frames, b1o, b2o, b3o){ //frames, button_1 option, button_1 damage, b2o, b2d, b3o, b3d
+
+	var move_database = document.getElementById("move_database");
+
+
+	var validation = false;
+	var grab_points = 1000;
+	
+	if(grab_frames >=2 && grab_frames<=20){ //min frames, max frames. Min == 400ms or 2 actions ->  4000ms or 20 actions
+		grab_points-= (grab_frames/2)*100; //max frames causes you to only have moves with 0 grab_points
+		validation = true; //valid amounts up to this point
+	}
+	
+	
+	if(validation == true){ //if grab_points was properly validated
+		validation = false; //disable validation
+		alert(move_database.getAttribute("move_grab_" + b1o));	
+	}
+}
+
+
+
+
+
+
+
+
+function move_creator_menu_icon(){
+     const bigSquare2 = document.createElement('div');
+		bigSquare2.id = "move_creator_menu";
+		bigSquare2.style.position = 'absolute';
+  
+		bigSquare2.style.width = 5 + "vw";
+		bigSquare2.style.height = 5 + "vh";
+  
+		bigSquare2.style.backgroundColor = "rgba(128, 128, 128, 0.5)";
+		bigSquare2.style.border = '2px solid black';
+  
+		bigSquare2.style.left = 92.5 + "vw";
+		bigSquare2.style.top = 2.5 + "vh";
+  
+		bigSquare2.style.zIndex = '5000';
+  bigSquare2.setAttribute("status", "closed");
+  
+  bigSquare2.addEventListener('click', function() {
+    if(bigSquare2.getAttribute("status") == "closed"){
+     move_creator_menu_opened(bigSquare2);
+
+    }
+        });
+    document.body.append(bigSquare2);
+}
+  
+
+function move_creator_menu_opened(move_creator_menu){
+        move_creator_menu.setAttribute("status", "opened");
+      
+            move_creator_menu.style.width = 95 + "vw";
+		 move_creator_menu.style.height = 95 + "vh";
+		 
+			move_creator_menu.style.left = 2.5 + "vw"; //adjust position for new size
+			move_creator_menu.style.backgroundColor = "rgba(250, 250, 250, 1)";
+  
+  
+       const bigSquare2 = document.createElement('div');
+		bigSquare2.id = "move_menu_closer";
+		bigSquare2.style.position = 'absolute';
+  
+		bigSquare2.style.width = 5 + "vw";
+		bigSquare2.style.height = 5 + "vh";
+  
+		bigSquare2.style.backgroundColor = "rgba(128, 128, 128, 0.5)";
+		bigSquare2.style.border = '2px solid black';
+  
+		bigSquare2.style.left = 92.5 + "vw";
+		bigSquare2.style.top = 2.5 + "vh";
+  
+		bigSquare2.style.zIndex = '5002';
+  bigSquare2.setAttribute("status", "closed");
+  
+  bigSquare2.addEventListener('click', function() {
+    if(bigSquare2.getAttribute("status") == "closed"){
+      move_creator_menu_closed(move_creator_menu,bigSquare2);
+
+    }
+        });
+    document.body.append(bigSquare2);
+ populate_move_menu(move_creator_menu);
+}
+  
+  function move_creator_menu_closed(bigSquare2, closer){
+    closer.remove();
+    bigSquare2.setAttribute("status", "closed");
+    bigSquare2.innerHTML = "";
+  
+    
+    bigSquare2.style.width = 5 + "vw";
+		bigSquare2.style.height = 5 + "vh";
+    
+    bigSquare2.style.left = 92.5 + "vw";
+		bigSquare2.style.top = 2.5 + "vh";
+  
+  bigSquare2.style.backgroundColor = "rgba(128, 128, 128, 0.5)";
+  }
+
+
+  function populate_move_menu(move_menu){
+    
+    var option_div = document.createElement('div');
+    option_div.setAttribute("id", "option_div");
+    
+	
+    var option_list = document.createElement('div');
+	option_list.style.backgroundColor = 'lightblue';
+	
+	option_list.setAttribute("menu_value", 0);
+	option_list.innerText = "Create Move";
+	
+    option_list.setAttribute("id", "option_list");
+    
+    option_div.appendChild(option_list);
+    move_menu.appendChild(option_div);
+    
+    option_div.style.width = '100%';
+    option_div.style.height = "20%";
+    
+    option_div.style.position ="relative";
+    
+    option_list.style.width = '100%';
+    option_list.style.height = "100%";
+    
+    option_list.style.position ="relative";
+    
+    
+    
+    var div_list = document.createElement('div');
+    div_list.setAttribute("id", "div_list");
+    
+    move_menu.appendChild(div_list);
+    div_list.style.position = "relative";
+
+    
+    
+    div_list.style.width = "100%";
+    div_list.style.height="80%";
+   
+    var options_array = ["Create Move", "Assign Move"];
+    
+    option_list.addEventListener('click', function() {
+		
+		if(option_list.getAttribute("menu_value") == 0){
+		custom_dropdown_maker("dropdown_maker_test", options_array, "list_value", 15, 0, 5, 95, move_menu, 9000, option_list);
+		option_list.setAttribute("menu_value", 1);
+		} else if(option_list.getAttribute("menu_value") == 1){
+			option_list.setAttribute("menu_value", 0);
+			var temp_options_div = document.getElementById("dropdown_maker_test");
+			move_menu.removeChild(temp_options_div);
+			
+			
+			if(option_list.innerText == options_array[0]){
+				create_move_menu(move_menu);
+				create_menu_players(div_list);
+			} else if (option_list.innerText == options_array[1]){
+				assign_move_menu(move_menu);
+				create_menu_players(div_list);
+			}
+		}
+		
+    });
+
+	
+    
+
+ create_move_menu(move_menu); //since starts at 0
+ create_menu_players(div_list);
+  }
+  
+  
+
+  
+ //drop_down id, height and width, dropdown options names, attribute to name and assign counter values, positions for options and their height and width, and parent to append to
+ // will click the original object again, so make sure original object has logic for disposing of the menu and cleaning up info
+ 
+ function custom_dropdown_maker(dropdown_name, options_array, attribute_name,  top_pos, left_pos, option_height, option_width, parent_value, zindex_value, reference_object){
+	
+
+		//sets up the base size and dimensions for the custom dropdown menu
+		var custom_dropdown = document.createElement('div');
+		custom_dropdown.setAttribute("id", dropdown_name);
+		
+		parent_value.appendChild(custom_dropdown);
+
+		custom_dropdown.style.position = "absolute";
+		
+		custom_dropdown.style.top = 0+ "vh";
+		custom_dropdown.style.left = 0 + "vw";		
+		
+		var counter = 0;
+		while(counter < options_array.length){
+			var temp_div = document.createElement('div');
+			temp_div.setAttribute("id", dropdown_name + "_temp_div_" + counter);
+			temp_div.setAttribute(attribute_name, options_array[counter]);
+			
+			temp_div.style.position = "absolute";
+			
+			temp_div.style.height = option_height + "vh";			
+			temp_div.style.width = option_width + "vw";
+
+			temp_div.innerText = options_array[counter];
+			custom_dropdown.appendChild(temp_div);
+			
+			assign_onclick(temp_div.getAttribute("id"), attribute_name, reference_object, dropdown_name, counter);
+			
+			temp_div.style.top = (top_pos +  (option_height*(counter+1))) + "vh";
+			temp_div.style.left = left_pos + "vw";
+			
+			temp_div.zIndex = zindex_value;
+		
+			counter+=1;
+		}
+		
+		
+	
+
+ }
+  
+  
+  
+  //using innerText because it doesn't matter if users messes with it, it'll just make nothing happen
+function assign_onclick(value, check_value, reference_object, drop_down_value, counter){
+	var temp_div = document.getElementById(value);
+	temp_div.addEventListener('click', function(){
+
+		reference_object.innerText = temp_div.innerText;
+		reference_object.click();
+		
+		var attack_type_dropdown_list = document.getElementById("attack_dropdown_list");
+		if(reference_object.getAttribute("id") != attack_dropdown_list.getAttribute("id")){ //in sub menu
+			if(attack_type_dropdown_list.innerText == "Grab Attacks"){
+				update_hitbox_values("move_grab_" + counter);
+			}else if(attack_type_dropdown_list.innerText == "Neutral Attacks"){
+				update_hitbox_values("move_attack_" + counter);
+			}else if(attack_type_dropdown_list.innerText == "Utility Attacks"){
+			
+			}else if(attack_type_dropdown_list.innerText == "Defense Attacks"){
+			
+			}
+		}
+
+		
+		
+		
+	});
+}
+
+
+
+
+
+/////////////////
+
+
+
+function create_move_menu(option_div, type){
+
+	//dropdown_name, base_height, base_width, options_array, attribute_name,  top_pos, left_pos, option_height, option_width, parent_value, zindex_value, reference_object
+	var base_div;
+	var other_base_div;
+	
+	var temp_options_div;
+	try{
+	
+		base_div = document.getElementById("attack_dropdown_list");
+		option_div.removeChild(base_div);
+		other_base_div = document.getElementById("other_attack_dropdown_list");
+		option_div.removeChild(other_base_div);
+		var temp_div = document.getElementById("move_type_list");
+		option_div.removeChild(temp_div);
+	
+	
+	}catch(error){
+		
+		
+	}
+	
+		
+	base_div= document.createElement('div');
+	base_div.setAttribute("id", "attack_dropdown_list");
+	
+	option_div.appendChild(base_div);
+	base_div.innerText = "Click to Select";
+	base_div.style.position = "absolute";
+	
+	base_div.style.height = 10+"vh";
+	base_div.style.width = 25+"vw";
+	
+	base_div.style.top = 25+"vh";
+	base_div.style.left = 5 +"vw";
+	
+	base_div.setAttribute("menu_value", 0);
+	
+	other_base_div= document.createElement('div');
+	
+	other_base_div.setAttribute("id", "other_attack_dropdown_list");	
+	option_div.appendChild(other_base_div);
+	
+	other_base_div.innerText = "Click to Select";	
+	other_base_div.style.position = "absolute";
+	
+	other_base_div.style.height = 10+"vh";
+	other_base_div.style.width = 25+"vw";
+	
+	other_base_div.style.top = 25+"vh";
+	other_base_div.style.left = 25 +"vw";
+	
+	other_base_div.setAttribute("menu_value_opened", 0);
+	
+	
+	
+
+	base_div.addEventListener('click', function(){
+
+		var options_array = ["Grab Attacks", "Neutral Attacks", "Utility Attacks", "Defense Attacks"];
+
+		if(base_div.getAttribute("menu_value") == 0){
+		custom_dropdown_maker("move_type_list", options_array, "list_values",25, 5, 5, 25, option_div, 8000, base_div);
+		base_div.setAttribute("menu_value", 1);
+		} else if(base_div.getAttribute("menu_value") == 1){
+			option_div.removeChild(document.getElementById("move_type_list"));
+			base_div.setAttribute("menu_value", 0);
+		}
+		
+		//communicates to sub move menu for what to display
+		if(base_div.innerText == options_array[0]){
+			other_base_div.setAttribute("menu_value", 0);
+		} else if(base_div.innerText == options_array[1]){
+			other_base_div.setAttribute("menu_value", 1);
+		} else if(base_div.innerText == options_array[2]){
+			other_base_div.setAttribute("menu_value", 2);
+		} else if(base_div.innerText == options_array[3]){
+			other_base_div.setAttribute("menu_value", 3);
+		}
+	});
+	
+	
+	other_base_div.addEventListener('click', function(){
+		
+		var other_options_array = [];
+		
+		//opening menu
+		if(other_base_div.getAttribute("menu_value_opened") == 0){
+			other_base_div.setAttribute("menu_value_opened", 1);
+			
+			var move_database = document.getElementById("move_database");
+			//grabs
+			if(other_base_div.getAttribute("menu_value") == 0){
+			
+				
+				
+				
+				var counter = 0;
+				while(move_list.getAttribute("move_grab_" + counter) != null){
+					var temp_value = move_list.getAttribute("move_grab_"+counter).split(",");
+					
+					other_options_array.push(temp_value[temp_value.length-1]);
+					counter+=1;
+				
+				}
+			}
+			
+			
+			
+			
+		//neutral atacks
+			else if(other_base_div.getAttribute("menu_value") == 1){
+				var counter = 0;
+				while(move_list.getAttribute("move_attack_" + counter) != null){
+					var temp_value = move_list.getAttribute("move_attack_"+counter).split(",");
+					
+					other_options_array.push(temp_value[temp_value.length-1]);
+					counter+=1;
+					
+				}
+				
+				}
+	
+				custom_dropdown_maker("other_move_type_list", other_options_array, "list_values",25, 25, 5, 25, option_div, 8000, other_base_div);
+			} 
+			//closing menu
+			else{
+				other_base_div.setAttribute("menu_value_opened", 0);
+				option_div.removeChild(document.getElementById("other_move_type_list"));
+			
+			}
+		});
+	
+	try{
+		
+			option_div.removeChild(document.getElementById("temp_options_div"));
+		} catch(error){
+		
+		}
+	generate_menu_options(option_div, "Create Move");
+}
+
+
+
+
+// MENU PLAYERS HERE
+
+function create_menu_players(move_menu){
+	var m_player_1 = document.createElement('div');
+	m_player_1.setAttribute("id", "menu_player_1");
+	
+	var m_player_2 = document.createElement('div');
+	m_player_2.setAttribute("id", "menu_player_2");
+	
+	 move_menu.appendChild(m_player_1);	 	
+	 move_menu.appendChild(m_player_2);
+	
+	m_player_1.style.width = 5 + "vw";//removed custom for now
+		
+		m_player_1.style.height = 10 + "vh";
+		m_player_1.style.position = 'absolute';
+		
+		m_player_1.style.backgroundColor = 'gray'; //temporary
+		
+		
+	m_player_2.style.width = 5 + "vw";//removed custom for now
+		
+		m_player_2.style.height = 10 + "vh";
+		m_player_2.style.position = 'absolute';
+		
+		m_player_2.style.backgroundColor = 'gray'; //temporary
+	
+	
+	m_player_1.style.zIndex = "5007";
+	m_player_2.style.zIndex = "5007";
+	
+	m_player_1.style.top = "50vh";
+	m_player_1.style.left = "5vw";
+	
+	m_player_2.style.top = "50vh";
+	m_player_2.style.left = "45vw";
+}
+
+
+
+
+
+
+
+function assign_move_menu(option_div){
+    var base_div;
+	var other_base_div;
+	try{
+	
+		base_div = document.getElementById("attack_dropdown_list");
+		option_div.removeChild(base_div);
+		other_base_div = document.getElementById("other_attack_dropdown_list");
+		option_div.removeChild(other_base_div);
+		var temp_div = document.getElementById("move_type_list");
+		option_div.removeChild(temp_div);
+	
+	
+	}catch(error){
+		
+		
+	}
+	
+	base_div= document.createElement('div');
+	base_div.setAttribute("id", "attack_dropdown_list");
+	
+	option_div.appendChild(base_div);
+	base_div.innerText = "Click to Select";
+	base_div.style.position = "absolute";
+	
+	base_div.style.height = 10+"vh";
+	base_div.style.width = 25+"vw";
+	
+	base_div.style.top = 25+"vh";
+	base_div.style.left = 5 +"vw";
+	
+	base_div.setAttribute("menu_value", 0);
+	
+	
+	other_base_div= document.createElement('div');
+	
+	other_base_div.setAttribute("id", "other_attack_dropdown_list");	
+	option_div.appendChild(other_base_div);
+	
+	other_base_div.innerText = "Click to Select";	
+	other_base_div.style.position = "absolute";
+	
+	other_base_div.style.height = 10+"vh";
+	other_base_div.style.width = 25+"vw";
+	
+	other_base_div.style.top = 25+"vh";
+	other_base_div.style.left = 25 +"vw";
+	
+	other_base_div.setAttribute("menu_value_opened", 0);
+	
+	
+
+	
+	base_div.addEventListener('click', function(){
+
+		
+		var options_array = ["Grab Attacks", "Neutral Attacks", "Utility Attacks", "Defense Attacks"];
+		if(base_div.getAttribute("menu_value") == 0){
+		custom_dropdown_maker("move_type_list", options_array, "list_values",25, 5, 5, 25, option_div, 8000, base_div);
+		base_div.setAttribute("menu_value", 1);
+		} else if(base_div.getAttribute("menu_value") == 1){
+			option_div.removeChild(document.getElementById("move_type_list"));
+			base_div.setAttribute("menu_value", 0);
+		}
+		
+		
+		//communicates to sub move menu for what to display
+		if(base_div.innerText == options_array[0]){
+			other_base_div.setAttribute("menu_value", 0);
+		} else if(base_div.innerText == options_array[1]){
+			other_base_div.setAttribute("menu_value", 1);
+		} else if(base_div.innerText == options_array[2]){
+			other_base_div.setAttribute("menu_value", 2);
+		} else if(base_div.innerText == options_array[3]){
+			other_base_div.setAttribute("menu_value", 3);
+		}
+	});
+	
+	
+	other_base_div.addEventListener('click', function(){
+		
+		var other_options_array = [];
+		
+		//opening menu
+		if(other_base_div.getAttribute("menu_value_opened") == 0){
+			other_base_div.setAttribute("menu_value_opened", 1);
+			
+			var move_database = document.getElementById("move_database");
+			//grabs
+			
+			if(other_base_div.getAttribute("menu_value") == 0){
+				other_options_array = ["Grab Attack 1", "Grab Attack 2", "Grab Attack 3"];		
+				
+			
+			}
+			
+			
+			
+			
+		//neutral atacks
+			else if(other_base_div.getAttribute("menu_value") == 1){
+				var x_counter = 0;
+				var y_counter = 0;
+				
+				var x_array = ["", "l", "r"];
+				var y_array = ["","u", "d"];
+				
+				var string_value = "";
+				var total_loops = 0;
+
+					while(total_loops <3){
+						while(y_counter <y_array.length){
+							while(x_counter < x_array.length){
+								string_value = "";
+								string_value += y_array[y_counter] + x_array[x_counter];
+								if(string_value == ""){
+									string_value = "n";
+								}
+								
+								other_options_array.push(string_value + "_button_" + total_loops);
+								x_counter+=1;
+							}
+							
+							x_counter = 0;
+							y_counter +=1;
+						}
+						total_loops +=1;
+						x_couner = 0;
+						y_counter = 0;
+					}
+				
+				}
+	
+				custom_dropdown_maker("other_move_type_list", other_options_array, "list_values",25, 25, 5, 25, option_div, 8000, other_base_div);
+			} 
+			//closing menu
+			else{
+				other_base_div.setAttribute("menu_value_opened", 0);
+				option_div.removeChild(document.getElementById("other_move_type_list"));			
+			}
+		});
+		
+		try{
+		
+			option_div.removeChild(document.getElementById("temp_options_div"));
+		} catch(error){
+		
+		}
+		generate_menu_options(option_div, "Assign Move");
+}
+
+
+
+
+function generate_menu_options(base_div, menu_type){
+	if(menu_type == "Create Move"){
+
+		var temp_div = document.createElement('div');
+		temp_div.style.zIndex =  "9000";
+		
+		temp_div.setAttribute("id", "temp_options_div");
+		var counter = 0;
+		var temp_array = ["Start Pos", "End Pos", "Trajectory Type", "Damage", "Horizontal Range", "Vertical Range", "Attack Speed", "Stun Time"];
+		
+		while(counter< temp_array.length){
+			var temp_title_div = document.createElement('div');
+			temp_title_div.setAttribute("id", temp_array[counter] + "_title");
+			temp_title_div.style.position = "absolute";
+			
+			temp_title_div.style.width = 25 + "vw";
+			temp_title_div.style.height = 4 + "vh";
+			
+			temp_title_div.style.top = 22 + (counter*8) + "vh";
+			temp_title_div.style.left = 63 + "vw";
+			
+			temp_title_div.innerText = temp_array[counter];
+			temp_title_div.style.zIndex = "9005";
+			
+			temp_title_div.style.fontSize = '2vh';
+			
+		
+			var temp_decrease_div = document.createElement('div');
+			temp_decrease_div.setAttribute("id", temp_array[counter] + "_decrease");
+			
+			temp_decrease_div.style.position = "absolute";
+			temp_decrease_div.style.left = 57.5  + "vw";
+			
+			temp_decrease_div.style.top = 25 + (counter*8) +  "vh";
+			temp_decrease_div.style.height = 4+"vh";
+			
+			temp_decrease_div.style.width =  7.5+"vw";
+			temp_decrease_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
+			
+			temp_decrease_div.style.zIndex =  "9005";
+			temp_decrease_div.innerText = "<";
+			
+			temp_decrease_div.style.fontSize = '3vh';
+			
+			
+			
+			var temp_increase_div = document.createElement('div');
+			temp_increase_div.setAttribute("id", temp_array[counter] + "_increase");
+			
+			temp_increase_div.style.position = "absolute";
+			temp_increase_div.style.left = 82.5  + "vw";
+			
+			temp_increase_div.style.top = 25 + (counter*8) +  "vh";
+			temp_increase_div.style.height = 4+"vh";
+			
+			temp_increase_div.style.width = 7.5+"vw";
+			temp_increase_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
+			
+			temp_increase_div.style.zIndex =  "9005";
+			temp_increase_div.innerText = ">";
+			
+			temp_increase_div.style.fontSize = '3vh';
+			
+			
+			var temp_value_div = document.createElement('div');
+			temp_value_div.setAttribute("id", temp_array[counter] + "_value");
+			
+			
+			temp_value_div.style.position = "absolute";
+			temp_value_div.style.left = 70  + "vw";
+			
+			temp_value_div.style.top = 25 + (counter*8) +  "vh";
+			temp_value_div.style.height = 4+"vh";
+			
+			temp_value_div.style.width = 7.5+"vw";
+			temp_value_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
+			
+			temp_value_div.style.zIndex =  "9005";
+			temp_value_div.innerText = 5;
+			
+			temp_value_div.setAttribute("current_value", 5);
+			temp_value_div.setAttribute("base_value", 5);
+			
+			temp_value_div.style.fontSize = '3vh';
+
+			
+			
+			temp_div.appendChild(temp_decrease_div);
+			temp_div.appendChild(temp_increase_div);
+			
+			temp_div.appendChild(temp_value_div);
+			temp_div.appendChild(temp_title_div);
+			
+			
+			
+			counter+=1;
+		}
+		
+		var temp_menu_hitbox = document.createElement('div');
+		temp_menu_hitbox.style.position = "absolute";
+		temp_menu_hitbox.setAttribute("id", "temp_menu_hitbox");
+		
+		var active_menu_hitbox = document.createElement('div');
+		active_menu_hitbox.style.position = "absolute";
+		active_menu_hitbox.setAttribute("id", "active_menu_hitbox");
+	
+		
+		temp_menu_hitbox.style.backgroundColor = `rgba(255, 25, 25, 1)`;
+		temp_menu_hitbox.style.zIndex = "9005";
+		
+		temp_menu_hitbox.style.width = 5 + "vw";
+		temp_menu_hitbox.style.height = 5 + "vh";
+		
+		temp_menu_hitbox.style.top = 69+2.5+ "vh"; //base spot is 69
+		temp_menu_hitbox.style.left = 10 + "vw";
+		
+		
+		active_menu_hitbox.style.backgroundColor = `rgba(25, 255, 25, 1)`;
+		active_menu_hitbox.style.zIndex = "9007"; //layered above 
+		
+		active_menu_hitbox.style.width = 0 + "vw";
+		active_menu_hitbox.style.height = 5 + "vh";
+		
+		active_menu_hitbox.style.top = 69+2.5+ "vh"; //base spot is 69
+		active_menu_hitbox.style.left = 10 + "vw";
+		
+		
+		temp_div.appendChild(active_menu_hitbox);
+		temp_div.appendChild(temp_menu_hitbox);
+		
+		
+		base_div.appendChild(temp_div);
+		
+		counter = 0;
+		while(counter < temp_array.length){
+			set_inner_menu_onclick(temp_array[counter]);
+			counter+=1;
+		}
+	}else if (menu_type == "Assign Move"){
+	
+	}
+	
+
+	
+}
+
+
+function set_inner_menu_onclick(value){
+	try{//for initial setup or if they swap menus and something happens, just to be safe for now until menu is completely finished
+		var temp_div = document.getElementById(value + "_decrease");
+		var temp_div2 = document.getElementById(value + "_increase");
+
+		var isMouseDown = false;
+		temp_div.addEventListener('click', function(){
+			var inner_value = document.getElementById(value + "_value");
+			var current_value = parseInt(inner_value.getAttribute("current_value"));
+			
+			var mod = 1;
+			if(value == "Attack Speed"){
+				mod = 10;
+			}
+			
+			inner_value.setAttribute("current_value", current_value-mod);
+			inner_value.innerText = current_value-mod;
+			update_temp_hitbox(value, current_value-mod);
+		
+		});
+
+		temp_div.addEventListener('mousedown', function(){
+		
+			isMouseDown = true;
+				// Start the interval to increase font size
+				interval = setInterval(() => {
+					if (isMouseDown) {
+						var inner_value = document.getElementById(value + "_value");
+						var current_value = parseInt(inner_value.getAttribute("current_value"));
+						
+						var mod = 1;
+						if(value == "Attack Speed"){
+							mod = 10;
+						}
+						
+						inner_value.setAttribute("current_value", current_value-mod);
+						inner_value.innerText = current_value-mod;
+						update_temp_hitbox(value, current_value-mod);
+					}else{
+						clearInterval(interval);
+					
+					}
+					
+					},100);
+		});
+		
+		temp_div.addEventListener('mouseup', function(){
+		
+			isMouseDown = false;
+		});
+		
+		
+		
+		
+		
+		
+		temp_div2.addEventListener('click', function(){
+			var inner_value = document.getElementById(value + "_value");
+			var current_value = parseInt(inner_value.getAttribute("current_value"));
+			
+			var mod = 1;
+			if(value == "Attack Speed"){
+				mod = 10;
+			}
+			
+			inner_value.setAttribute("current_value", current_value+mod);
+			inner_value.innerText = current_value+mod;
+			update_temp_hitbox(value, current_value+mod);
+		
+		});
+		
+		temp_div2.addEventListener('mousedown', function(){
+		
+			isMouseDown = true;
+				// Start the interval to increase font size
+				interval = setInterval(() => {
+					if (isMouseDown) {
+						
+						var inner_value = document.getElementById(value + "_value");
+						var current_value = parseInt(inner_value.getAttribute("current_value"));
+						
+						var mod = 1;
+						if(value == "Attack Speed"){
+							mod = 10;
+						}
+						
+						inner_value.setAttribute("current_value", current_value+mod);
+						inner_value.innerText = current_value+mod;
+						update_temp_hitbox(value, current_value+mod);
+					}else{
+						clearInterval(interval);
+					
+					}
+					
+					},100);
+		});
+		
+		temp_div2.addEventListener('mouseup', function(){
+		
+			isMouseDown = false;
+		});
+	}catch(error){
+	//here for initial menu setup to avoid startup menu error
+	}
+}
+
+function update_temp_hitbox(attribute_type, new_value){
+	var temp_hitbox_div = document.getElementById("temp_menu_hitbox");
+
+	if(attribute_type == "Damage"){
+		var temp_damage_div = document.getElementById("Damage_value");
+
+		temp_hitbox_div.style.backgroundColor = `rgba(255, 25, 25, 1)`;
+	}else if(attribute_type == "Horizontal Range"){
+		temp_hitbox_div.style.width = new_value + "vw";
+	} else if (attribute_type == "Vertical Range"){
+		temp_hitbox_div.style.height = new_value + "vh";
+		temp_hitbox_div.style.top = 74 - (new_value/2)   +"vh";
+	} else if (attribute_type == "Attack Speed"){
+		try{
+			clearInterval(interval_id);
+			}catch(error){
+			
+			}
+		temp_hurtbox_anim_loop(temp_hitbox_div);
+	} else if(attribute_type == "Trajectory Type"){
+		if(new_value == 0){
+			alert("I got here");
+		}
+	}
+
+}
+
+function update_hitbox_values(search_value){
+
+	var update_data = move_database.getAttribute(search_value).split(",");
+	if(search_value.split("_")[1] == "grab"){
+		
+	} else if(search_value.split("_")[1] == "attack"){
+		var temp_array = ["Start Pos", "End Pos", "Trajectory Type", "Damage", "Horizontal Range", "Vertical Range", "Attack Speed", "Stun Time"];
+		
+		var counter = 0;
+		
+		while(counter<temp_array.length){
+			var temp_value_div = document.getElementById(temp_array[counter] + "_value");
+			temp_value_div.setAttribute("current_value", update_data[counter]);
+			temp_value_div.setAttribute("base_value", update_data[counter]);
+			
+			temp_value_div.innerText = temp_value_div.getAttribute("current_value");
+			update_temp_hitbox(temp_array[counter], update_data[counter]);
+			counter+=1;
+		}
+	}
+}
+
+
+var interval_id;
+function temp_hurtbox_anim_loop(element){
+	//var active_hurt_box; = document.createElement('div');
+	/*var attack_speed_div = document.getElementById("active_menu_hitbox");
+	var attack_speed_value = parseInt(attack_speed_div.getAttribute("current_value"));
+	
+	
+
+	var increment = (17/attack_speed_value)
+	console.log(increment);
+	 interval_id = setInterval(() => {
+        opacity += increment; // Increase opacity
+        if (opacity >= 1) {
+            clearInterval(interval_id); // Clear interval when fully visible
+            opacity = 1; // Ensure opacity is set to 1
+			temp_hurtbox_anim_loop(element);
+        }
+        element.style.opacity = opacity; // Update the element's opacity
+    }, 17);
+	*/
+	
+}
+
+move_creator_menu_icon(); //creates move creator menu
+
+
+
+
+
+/* To do:
+Currently, everything above is based on the initial moveset in terms of how an attack operates.
+They are assuming it starts at the user, and then moves towards the right direction.
+However, we need options to change the type of direction the move is going, and it's starting position.
+
+Essentially you'd pick a move type. This would limit your subsequent options, and base stats. So for now, we have Jab as an example.
+Then, you can choose what type of starting position the move has. Some moves cant change this.
+Then, you can choose where the end position is. Some moves cant change this.
+
+Then you can change the size of the move itself. It's width and height.
+Then, you can change How fast it operates, its damage, and its oh frames
+*/
+	
+	</script>
+
+</body>
+</html>
