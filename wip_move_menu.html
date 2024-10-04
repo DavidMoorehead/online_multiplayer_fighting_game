@@ -78,12 +78,16 @@ game_grid.setAttribute("base_grab", 5); //5* 200ms base = 1s
 	
 	
 	//move data, base damage, distance -vh+vh, distance -vw+vw, anim time, stun time, name
-	move_list.setAttribute("move_attack_0", "0, 2, 0, 1, 5, 1, 1, 300, 500, 1,Jab");
-	
-	
+	move_list.setAttribute("move_attack_0", "0, 2, 0, 1, 0, 5, 1, 1, 300, 500, -9,Jab");
 	//grab data, base damage, time in ms, ends grab, name
 	move_list.setAttribute("move_grab_0","3,500,false, Gut_Punch");
+	
+	
+	
 	move_list.setAttribute("trajectory_types", "Rightwards,Leftwards,Upwards,Downwards,Right Curve"); 
+	move_list.setAttribute("status_effect_offensive", "None, Poison, Burn, Freeze, Shock, Disable"); 
+	
+	move_list.setAttribute("status_effect_defensive", "None, Cure, Stealth, Speed"); 
 	document.body.appendChild(move_list);
 
 //for db, array is = name, starting damage
@@ -730,50 +734,51 @@ function generate_menu_options(base_div, menu_type){
 		
 		temp_div.setAttribute("id", "temp_options_div");
 		var counter = 0;
-		var temp_array = ["Start Pos", "End Pos", "Trajectory Type", "Attacks", "Damage", "Height", "Width", "Attack Speed", "Stun Time"];
+		var temp_array = ["Start Pos", "End Pos", "Trajectory Type", "Attacks", "Status Effect", "Damage", "Height", "Width", "Attack Speed", "Stun Time"];
 		
 		while(counter< temp_array.length){
 			if(temp_array[counter] != "Trajectory Type"){
 				var temp_decrease_div = document.createElement('div');
-			temp_decrease_div.setAttribute("id", temp_array[counter] + "_decrease");
-			
-			temp_decrease_div.style.position = "absolute";
-			temp_decrease_div.style.left = 57.5  + "vw";
-			
-			temp_decrease_div.style.top = 24 + (counter*8) +  "vh";
-			temp_decrease_div.style.height = 4+"vh";
-			
-			temp_decrease_div.style.width =  7.5+"vw";
-			temp_decrease_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
-			
-			temp_decrease_div.style.zIndex =  "9005";
-			temp_decrease_div.innerText = "<";
-			
-			temp_decrease_div.style.fontSize = '3vh';
-			
-			
-			
-			var temp_increase_div = document.createElement('div');
-			temp_increase_div.setAttribute("id", temp_array[counter] + "_increase");
-			
-			temp_increase_div.style.position = "absolute";
-			temp_increase_div.style.left = 82.5  + "vw";
-			
-			temp_increase_div.style.top = 24 + (counter*8) +  "vh";
-			temp_increase_div.style.height = 4+"vh";
-			
-			temp_increase_div.style.width = 7.5+"vw";
-			temp_increase_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
-			
-			temp_increase_div.style.zIndex =  "9005";
-			temp_increase_div.innerText = ">";
-			
-			temp_increase_div.style.fontSize = '3vh';
-			
+				temp_decrease_div.setAttribute("id", temp_array[counter] + "_decrease");
 				
-			temp_div.appendChild(temp_decrease_div);
-			temp_div.appendChild(temp_increase_div);
+				temp_decrease_div.style.position = "absolute";
+				temp_decrease_div.style.left = 57.5  + "vw";
+				
+				temp_decrease_div.style.top = 24 + (counter*7) +  "vh";
+				temp_decrease_div.style.height = 4+"vh";
+				
+				temp_decrease_div.style.width =  7.5+"vw";
+				temp_decrease_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
+				
+				temp_decrease_div.style.zIndex =  "9005";
+				temp_decrease_div.innerText = "<";
+				
+				temp_decrease_div.style.fontSize = '3vh';
+				
+				
+				
+				var temp_increase_div = document.createElement('div');
+				temp_increase_div.setAttribute("id", temp_array[counter] + "_increase");
+				
+				temp_increase_div.style.position = "absolute";
+				temp_increase_div.style.left = 82.5  + "vw";
+				
+				temp_increase_div.style.top = 24 + (counter*7) +  "vh";
+				temp_increase_div.style.height = 4+"vh";
+				
+				temp_increase_div.style.width = 7.5+"vw";
+				temp_increase_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
+				
+				temp_increase_div.style.zIndex =  "9005";
+				temp_increase_div.innerText = ">";
+				
+				temp_increase_div.style.fontSize = '3vh';
+				
+					
+				temp_div.appendChild(temp_decrease_div);
+				temp_div.appendChild(temp_increase_div);
 			}
+			
 			var temp_title_div = document.createElement('div');
 			temp_title_div.setAttribute("id", temp_array[counter] + "_title");
 			temp_title_div.style.position = "absolute";
@@ -781,7 +786,7 @@ function generate_menu_options(base_div, menu_type){
 			temp_title_div.style.width = 25 + "vw";
 			temp_title_div.style.height = 4 + "vh";
 			
-			temp_title_div.style.top = 21 + (counter*8) + "vh";
+			temp_title_div.style.top = 22 + (counter*7) + "vh";
 			temp_title_div.style.left = 63 + "vw";
 			
 			temp_title_div.innerText = temp_array[counter];
@@ -800,7 +805,7 @@ function generate_menu_options(base_div, menu_type){
 			temp_value_div.style.position = "absolute";
 			temp_value_div.style.left = 70  + "vw";
 			
-			temp_value_div.style.top = 24 + (counter*8) +  "vh";
+			temp_value_div.style.top = 24 + (counter*7) +  "vh";
 			temp_value_div.style.height = 4+"vh";
 			
 			temp_value_div.style.width = 7.5+"vw";
@@ -885,8 +890,8 @@ function set_inner_menu_onclick(value){
 			inner_value.setAttribute("current_value", current_value-mod);
 			inner_value.innerText = current_value-mod;
 			update_temp_hitbox(value, current_value-mod);
-			update_move_cost(value, "decrease");
 		
+			
 		});
 
 		
@@ -910,7 +915,7 @@ function set_inner_menu_onclick(value){
 			inner_value.setAttribute("current_value", current_value+mod);
 			inner_value.innerText = current_value+mod;
 			update_temp_hitbox(value, current_value+mod);
-			update_move_cost(value, "increase");
+			
 		
 		});
 		
@@ -919,11 +924,19 @@ function set_inner_menu_onclick(value){
 	}
 }
 
+
+
+
+
+///updating the values for individual items that are now changed from user input
 function update_temp_hitbox(attribute_type, new_value){
 	var temp_hitbox_div = document.getElementById("temp_menu_hitbox");
+	var move_cost_div = document.getElementById("Move Cost_value");
+	new_value = parseInt(new_value);
 
 	if(attribute_type == "Damage"){
-		var temp_damage_div = document.getElementById("Damage_value");
+
+		move_cost_div.setAttribute("current_damage_mod",new_value*2);
 
 		
 	}else if(attribute_type == "Width"){	
@@ -952,7 +965,7 @@ function update_temp_hitbox(attribute_type, new_value){
 		var temp_array = move_list.getAttribute("trajectory_types").split(",");
 		
 		temp_div.innerText = temp_array[parseInt(new_value)];
-			
+	
 		
 	} else if(attribute_type == "Move Cost"){
 		var temp_div = document.getElementById("Move Cost_value");
@@ -960,8 +973,37 @@ function update_temp_hitbox(attribute_type, new_value){
 		temp_div.setAttribute("base_cost", new_value);
 		
 		temp_div.innerText = "Cost = " + new_value;
-	}
+	} else if(attribute_type == "Status Effect"){	
+		var temp_div = document.getElementById("Status Effect_value");
+		
+		
+		var offensive_array = move_list.getAttribute("status_effect_offensive").split(",");
+		var defensive_array = move_list.getAttribute("status_effect_defensive").split(",");
+		
+		if(new_value < 0){
+			new_value = new_value*-1;
+			if(new_value > defensive_array.length-1){
+				new_value = defensive_array.length-1;
+			}
+			
+			temp_div.innerText = defensive_array[new_value];
 
+		}else if(new_value > 0){
+			if(new_value > offensive_array.length-1){
+				new_value = offensive_array.length-1;
+			}
+			
+			temp_div.innerText = offensive_array[new_value];
+			
+		}else{
+			temp_div.innerText = offensive_array[new_value];
+		}
+
+		temp_div.setAttribute("current_value", new_value*-1);
+		move_cost_div.setAttribute("current_status_effect_mod",new_value*10);   //LEFT OFF HERE
+
+	}
+	update_move_cost();
 }
 
 
@@ -974,7 +1016,7 @@ function update_hitbox_values(search_value){
 	if(search_value.split("_")[1] == "grab"){
 		
 	} else if(search_value.split("_")[1] == "attack"){
-		var temp_array = ["Start Pos", "End Pos", "Trajectory Type", "Attacks", "Damage", "Height", "Width", "Attack Speed", "Stun Time", "Move Cost"];
+		var temp_array = ["Start Pos", "End Pos", "Trajectory Type", "Attacks", "Status Effect", "Damage", "Height", "Width", "Attack Speed", "Stun Time", "Move Cost"];
 		
 		var counter = 0;
 		
@@ -984,7 +1026,7 @@ function update_hitbox_values(search_value){
 			temp_value_div.setAttribute("base_value", update_data[counter]);
 			
 			temp_value_div.innerText = temp_value_div.getAttribute("current_value");
-			update_temp_hitbox(temp_array[counter], update_data[counter]);
+			update_temp_hitbox(temp_array[counter], update_data[counter]);//updates damage values
 			counter+=1;
 		}
 	}
@@ -1016,7 +1058,7 @@ function temp_hurtbox_anim_loop(element){
 		move_type = "left";
 	}
 	var increment = (17/attack_speed_value)*difference;
-	var move_value = base_left_pos;
+	var move_value = base_left_pos + start_pos_value;
 
 	 interval_id = setInterval(() => {
   
@@ -1041,22 +1083,31 @@ function temp_hurtbox_anim_loop(element){
 	
 }
 
-
-function update_move_cost(attribute, update_type){
+//updates cost value based on current values 
+function update_move_cost(){
 	var move_cost_div = document.getElementById("Move Cost_value");
 	var current_move_value = parseInt(move_cost_div.getAttribute("current_cost"));
-	var mod = 0;
 	
-	if(attribute == "Damage"){
-		mod = 2;
+	var mod = 0; //used to make it easier to fine the value used for adjusting move cost values
+	var value_array = ["current_damage_mod", "current_status_effect_mod"];
+	
+	
+	
+	var counter = 0;
+	var total_cost = 0;
+	while(counter < value_array.length){
+		try{
+		total_cost += parseInt(move_cost_div.getAttribute(value_array[counter]));
+		}catch(error){
+		
+		}
+		counter+=1;
 	}
 	
 	
-	if(update_type == "decrease"){
-		mod = mod *-1;
-	}
+	total_cost += parseInt(move_cost_div.getAttribute("base_cost")); //sets discount for starting position of move values
 	
-	move_cost_div.setAttribute("current_cost", current_move_value +mod);
+	move_cost_div.setAttribute("current_cost", total_cost);
 	move_cost_div.innerText = "Cost = "+ move_cost_div.getAttribute("current_cost");
 }
 
