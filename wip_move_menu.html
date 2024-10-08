@@ -71,6 +71,10 @@ game_grid.setAttribute("onhit_button_1", "null"); //defense tool 2
 game_grid.setAttribute("onhit_button_2", "null"); //defense tool 3
 game_grid.setAttribute("base_grab", 5); //5* 200ms base = 1s
 
+	var saved_list = document.createElement('div'); //currently will just save. Needs a ui to overwrite or delete moves.
+	saved_list.setAttribute("id", "user_saved_move_database");
+	//format will be same as move list (move_attack_0), then values with cost value. It will then be validated.
+	//ie: (start_pos, end_pos, trajectory type, attacks, status effect, damage, height, width, attack speed, stun timer, move_attack_location, move_name
 	
 	var move_list = document.createElement('div');
 	move_list.setAttribute("id", "move_database");
@@ -78,7 +82,8 @@ game_grid.setAttribute("base_grab", 5); //5* 200ms base = 1s
 	
 	
 	//move data, base damage, distance -vh+vh, distance -vw+vw, anim time, stun time, name
-	move_list.setAttribute("move_attack_0", "0, 2, 0, 1, 0, 5, 1, 1, 300, 500, -9,Jab");
+	move_list.setAttribute("move_attack_0", "0, 2, 0, 1, 0, 5, 1, 1, 300, 500, -59,Jab");
+	move_list.setAttribute("move_attack_1", "0, 2, 0, 1, 0, 5, 1, 1, 300, 500, -59,Jab2");
 	//grab data, base damage, time in ms, ends grab, name
 	move_list.setAttribute("move_grab_0","3,500,false, Gut_Punch");
 	
@@ -88,6 +93,7 @@ game_grid.setAttribute("base_grab", 5); //5* 200ms base = 1s
 	move_list.setAttribute("status_effect_offensive", "None, Poison, Burn, Freeze, Shock, Disable"); 
 	
 	move_list.setAttribute("status_effect_defensive", "None, Cure, Stealth, Speed"); 
+	move_list.setAttribute("current_move", "None");
 	document.body.appendChild(move_list);
 
 //for db, array is = name, starting damage
@@ -334,8 +340,10 @@ function assign_onclick(value, check_value, reference_object, drop_down_value, c
 		if(reference_object.getAttribute("id") != attack_dropdown_list.getAttribute("id")){ //in sub menu
 			if(attack_type_dropdown_list.innerText == "Grab Attacks"){
 				update_hitbox_values("move_grab_" + counter);
+				move_list.setAttribute("current_move", "move_grab_" + counter);
 			}else if(attack_type_dropdown_list.innerText == "Neutral Attacks"){
 				update_hitbox_values("move_attack_" + counter);
+				move_list.setAttribute("current_move", "move_attack_" + counter);
 			}else if(attack_type_dropdown_list.innerText == "Utility Attacks"){
 			
 			}else if(attack_type_dropdown_list.innerText == "Defense Attacks"){
@@ -353,10 +361,10 @@ function assign_onclick(value, check_value, reference_object, drop_down_value, c
 
 
 
-/////////////////
-
-
-
+//////////////////////////////////////////////
+// This is what creates the move menu and starts the process to generate the options 
+// 
+////////////////////////////////////////
 function create_move_menu(option_div, type){
 
 	//dropdown_name, base_height, base_width, options_array, attribute_name,  top_pos, left_pos, option_height, option_width, parent_value, zindex_value, reference_object
@@ -724,7 +732,10 @@ function assign_move_menu(option_div){
 }
 
 
-
+//////////////////////////////////////////////
+// This is what creates the options when creating custom moves
+//
+//////////////////////////////////////////////
 
 function generate_menu_options(base_div, menu_type){
 	if(menu_type == "Create Move"){
@@ -747,7 +758,7 @@ function generate_menu_options(base_div, menu_type){
 				temp_decrease_div.style.top = 24 + (counter*7) +  "vh";
 				temp_decrease_div.style.height = 4+"vh";
 				
-				temp_decrease_div.style.width =  7.5+"vw";
+				temp_decrease_div.style.width =  2.5+"vw";
 				temp_decrease_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
 				
 				temp_decrease_div.style.zIndex =  "9005";
@@ -757,16 +768,35 @@ function generate_menu_options(base_div, menu_type){
 				
 				
 				
+				var temp_decrease_div2 = document.createElement('div');
+				temp_decrease_div2.setAttribute("id", temp_array[counter] + "_decrease_10");
+				
+				temp_decrease_div2.style.position = "absolute";
+				temp_decrease_div2.style.left = 62.5  + "vw";
+				
+				temp_decrease_div2.style.top = 24 + (counter*7) +  "vh";
+				temp_decrease_div2.style.height = 4+"vh";
+				
+				temp_decrease_div2.style.width =  2.5+"vw";
+				temp_decrease_div2.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
+				
+				temp_decrease_div2.style.zIndex =  "9005";
+				temp_decrease_div2.innerText = "<<";
+				
+				temp_decrease_div2.style.fontSize = '3vh';
+				
+				
+				
 				var temp_increase_div = document.createElement('div');
 				temp_increase_div.setAttribute("id", temp_array[counter] + "_increase");
 				
 				temp_increase_div.style.position = "absolute";
-				temp_increase_div.style.left = 82.5  + "vw";
+				temp_increase_div.style.left = 87.5  + "vw";
 				
 				temp_increase_div.style.top = 24 + (counter*7) +  "vh";
 				temp_increase_div.style.height = 4+"vh";
 				
-				temp_increase_div.style.width = 7.5+"vw";
+				temp_increase_div.style.width = 2.5+"vw";
 				temp_increase_div.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
 				
 				temp_increase_div.style.zIndex =  "9005";
@@ -774,9 +804,33 @@ function generate_menu_options(base_div, menu_type){
 				
 				temp_increase_div.style.fontSize = '3vh';
 				
+				
+				
+				
+				
+				var temp_increase_div2 = document.createElement('div');
+				temp_increase_div2.setAttribute("id", temp_array[counter] + "_increase_10");
+				
+				temp_increase_div2.style.position = "absolute";
+				temp_increase_div2.style.left = 82.5  + "vw";
+				
+				temp_increase_div2.style.top = 24 + (counter*7) +  "vh";
+				temp_increase_div2.style.height = 4+"vh";
+				
+				temp_increase_div2.style.width = 2.5+"vw";
+				temp_increase_div2.style.backgroundColor = "rgba(0, 128, 128, 0.5)";
+				
+				temp_increase_div2.style.zIndex =  "9005";
+				temp_increase_div2.innerText = ">>";
+				
+				temp_increase_div2.style.fontSize = '3vh';
+				
 					
 				temp_div.appendChild(temp_decrease_div);
 				temp_div.appendChild(temp_increase_div);
+				
+				temp_div.appendChild(temp_decrease_div2);
+				temp_div.appendChild(temp_increase_div2);
 			}
 			
 			var temp_title_div = document.createElement('div');
@@ -863,6 +917,36 @@ function generate_menu_options(base_div, menu_type){
 			set_inner_menu_onclick(temp_array[counter]);
 			counter+=1;
 		}
+		
+		
+		var save_move_div = document.createElement('div');
+		save_move_div.style.position = "absolute";
+		save_move_div.setAttribute("id", "save_move_button");
+		
+		save_move_div.style.backgroundColor = `rgba(2, 205, 205, 1)`;
+		save_move_div.style.zIndex = "9005";
+		
+		save_move_div.style.width = 15 + "vw";
+		save_move_div.style.height = 8 + "vh";
+		
+		save_move_div.style.top = 82.5+ "vh"; //base spot is 69
+		save_move_div.style.left = 20 + "vw";
+		
+		save_move_div.innerText = "Click to Save";
+		temp_div.appendChild(save_move_div);
+		
+		save_move_div.addEventListener('click', function(){
+			save_current_move();
+		});
+		
+		
+		
+		
+		
+		
+		
+		
+		//Assign move menu goes here
 	}else if (menu_type == "Assign Move"){
 	
 	}
@@ -877,15 +961,19 @@ function set_inner_menu_onclick(value){
 		var temp_div = document.getElementById(value + "_decrease");
 		var temp_div2 = document.getElementById(value + "_increase");
 
+		var temp_div3 = document.getElementById(value + "_decrease_10");
+		var temp_div4 = document.getElementById(value + "_increase_10");
 
 		temp_div.addEventListener('click', function(){
 			var inner_value = document.getElementById(value + "_value");
 			var current_value = parseInt(inner_value.getAttribute("current_value"));
 			
 			var mod = 1;
-			if(value == "Attack Speed"){
+			if(value == "Attack Speed" || value == "Stun Time"){
 				mod = 10;
 			}
+			
+			
 			
 			inner_value.setAttribute("current_value", current_value-mod);
 			inner_value.innerText = current_value-mod;
@@ -908,9 +996,10 @@ function set_inner_menu_onclick(value){
 			var current_value = parseInt(inner_value.getAttribute("current_value"));
 			
 			var mod = 1;
-			if(value == "Attack Speed"){
+			
+			if(value == "Attack Speed" || value =="Stun Time"){
 				mod = 10;
-			}
+			} 
 			
 			inner_value.setAttribute("current_value", current_value+mod);
 			inner_value.innerText = current_value+mod;
@@ -918,6 +1007,48 @@ function set_inner_menu_onclick(value){
 			
 		
 		});
+		
+		
+		
+		
+		
+		temp_div3.addEventListener('click', function(){
+			var inner_value = document.getElementById(value + "_value");
+			var current_value = parseInt(inner_value.getAttribute("current_value"));
+			
+			var mod = 10;
+			if(value == "Attack Speed" || value == "Stun Time"){
+				mod = 100;
+			}
+			
+			
+			
+			inner_value.setAttribute("current_value", current_value-mod);
+			inner_value.innerText = current_value-mod;
+			update_temp_hitbox(value, current_value-mod);
+		
+			
+		});
+		
+		
+		temp_div4.addEventListener('click', function(){
+			var inner_value = document.getElementById(value + "_value");
+			var current_value = parseInt(inner_value.getAttribute("current_value"));
+			
+			var mod = 10;
+			
+			if(value == "Attack Speed" || value =="Stun Time"){
+				mod = 100;
+			} 
+			
+			inner_value.setAttribute("current_value", current_value+mod);
+			inner_value.innerText = current_value+mod;
+			update_temp_hitbox(value, current_value+mod);
+			
+		
+		});
+		
+		
 		
 	}catch(error){
 	//here for initial menu setup to avoid startup menu error
@@ -929,36 +1060,106 @@ function set_inner_menu_onclick(value){
 
 
 ///updating the values for individual items that are now changed from user input
+// This updates the cost value associated to it, their display, and their values stored in attribute_value
 function update_temp_hitbox(attribute_type, new_value){
 	var temp_hitbox_div = document.getElementById("temp_menu_hitbox");
 	var move_cost_div = document.getElementById("Move Cost_value");
 	new_value = parseInt(new_value);
 
-	if(attribute_type == "Damage"){
+
+	if(attribute_type == "Start Pos" || attribute_type == "End Pos"){
+	
+	//first, grabs values needed for logic calculations
+		var temp_div = document.getElementById("Trajectory Type_value");
+		
+		var trajectory_array = move_list.getAttribute("trajectory_types").split(",")		
+		var current_trajectory = trajectory_array[parseInt(temp_div.getAttribute("current_value"))];
+		
+		var start_div = document.getElementById("Start Pos_value");
+		var end_div = document.getElementById("End Pos_value");
+		
+		var start_value = parseInt(start_div.getAttribute("current_value"));		
+		var end_value = parseInt(end_div.getAttribute("current_value"));
+		
+		
+		//checks if values make sense for the trajectory type rules
+		if(current_trajectory == "Rightwards"){
+			if(start_value <= end_value){
+				difference_mod = end_value - start_value;
+				move_cost_div.setAttribute("current_difference_mod", difference_mod);
+			} else if(start_value >	 end_value){
+				alert("If using Rightwards Trajectory, End Pos has to be greater than or equal to Start Pos");
+				
+				end_div.setAttribute("current_value", start_value);
+				start_div.setAttribute("current_value", start_value);
+				
+				end_div.innerText = start_value;
+				start_div.innerText = start_value;
+				
+				move_cost_div.setAttribute("current_difference_mod", 0);
+			} 
+		}
+		
+	
+	
+	}
+
+	else if(attribute_type == "Damage"){
 
 		move_cost_div.setAttribute("current_damage_mod",new_value*2);
-
+		
 		
 	}else if(attribute_type == "Width"){	
 		if(new_value <1){
 			var temp_div = document.getElementById(attribute_type + "_value");
 			temp_div.setAttribute("current_value", 1); //prevent <0 values
 			temp_div.innerText = "1";
+			
+			move_cost_div.setAttribute("current_width_mod", 1);
+	
 		}else{
 			temp_hitbox_div.style.width = new_value + "vw";
-
+			move_cost_div.setAttribute("current_width_mod",(new_value*2)-1);
 		}
 		
 	} else if (attribute_type == "Height"){
+	if(new_value >0){
+		
 		temp_hitbox_div.style.height = new_value + "vh";
 		temp_hitbox_div.style.top = 74 - (new_value/2)   +"vh";
+		
+		move_cost_div.setAttribute("current_height_mod",new_value*1);
+		}else{
+			var temp_div = document.getElementById(attribute_type + "_value");
+			temp_div.setAttribute("current_value", 1);
+			temp_div.innerText = "1";
+			
+			
+			move_cost_div.setAttribute("current_height_mod", 1);
+		}
 	} else if (attribute_type == "Attack Speed"){
 		try{
-			clearInterval(interval_id);
+			clearInterval(interval_id); //resets if attack anim is currently being displayed
 			}catch(error){
 			
 			}
+			
+		var temp_div = document.getElementById(attribute_type + "_value");
+		if(new_value <300){
+			temp_div.setAttribute("current_value", 300); //prevent <0 values
+			temp_div.innerText = "300";
+			
+			move_cost_div.setAttribute("current_value", 300);
+		} else{
+			move_cost_div.setAttribute("current_value", new_value);
+			}
+		var temp_value = parseInt(temp_div.getAttribute("base_value"));
+
+		move_cost_div.setAttribute("current_attack_speed_mod", (temp_value - new_value)/10);
 		temp_hurtbox_anim_loop(temp_hitbox_div);
+		
+		
+		
 	} else if(attribute_type == "Trajectory Type"){
 	
 		var temp_div = document.getElementById("Trajectory Type_value");
@@ -967,12 +1168,17 @@ function update_temp_hitbox(attribute_type, new_value){
 		temp_div.innerText = temp_array[parseInt(new_value)];
 	
 		
+		
+		
 	} else if(attribute_type == "Move Cost"){
 		var temp_div = document.getElementById("Move Cost_value");
 		temp_div.setAttribute("current_cost", new_value);
 		temp_div.setAttribute("base_cost", new_value);
 		
 		temp_div.innerText = "Cost = " + new_value;
+		
+		
+		
 	} else if(attribute_type == "Status Effect"){	
 		var temp_div = document.getElementById("Status Effect_value");
 		
@@ -987,21 +1193,56 @@ function update_temp_hitbox(attribute_type, new_value){
 			}
 			
 			temp_div.innerText = defensive_array[new_value];
-
+			temp_div.setAttribute("current_value", new_value*-1);
+			move_cost_div.setAttribute("current_status_effect_mod",10);
 		}else if(new_value > 0){
 			if(new_value > offensive_array.length-1){
 				new_value = offensive_array.length-1;
 			}
 			
 			temp_div.innerText = offensive_array[new_value];
-			
+			temp_div.setAttribute("current_value", new_value);
+			move_cost_div.setAttribute("current_status_effect_mod",10);
 		}else{
 			temp_div.innerText = offensive_array[new_value];
+			move_cost_div.setAttribute("current_status_effect_mod",0);
 		}
 
-		temp_div.setAttribute("current_value", new_value*-1);
-		move_cost_div.setAttribute("current_status_effect_mod",new_value*10);   //LEFT OFF HERE
+		
+		
 
+	}  else if(attribute_type == "Attacks"){
+		var temp_div = document.getElementById("Attacks_value");
+		
+		if(new_value <=0){
+			temp_div.innerText = "1";
+			temp_div.setAttribute("current_value", 1);
+		
+			move_cost_div.setAttribute("current_Attacks_mod",1);
+		}else{
+		
+			move_cost_div.setAttribute("current_Attacks_mod",new_value);
+		}
+		
+		
+		
+		
+	} else if (attribute_type = "Stun Time"){
+		var temp_div = document.getElementById("Stun Time_value");
+		
+		if(new_value <=-1000){
+			temp_div.innerText = "-1000";
+			temp_div.setAttribute("current_value", -1000);
+		
+			move_cost_div.setAttribute("current_Stun_Time_mod",-1000/10);
+		}else {
+			if(new_value > 1000){
+				new_value = 1000;
+				temp_div.innerText = "1000";
+				temp_div.setAttribute("current_value", 1000);
+			}
+			move_cost_div.setAttribute("current_Stun_Time_mod",new_value/10);
+		}
 	}
 	update_move_cost();
 }
@@ -1074,7 +1315,7 @@ function temp_hurtbox_anim_loop(element){
 				temp_hurtbox_anim_loop(element);
 			}
 			
-		    move_value += increment; // Increase opacity
+		    move_value += increment; 
 			element.style.left = move_value + "vw";
 		}
 
@@ -1089,7 +1330,8 @@ function update_move_cost(){
 	var current_move_value = parseInt(move_cost_div.getAttribute("current_cost"));
 	
 	var mod = 0; //used to make it easier to fine the value used for adjusting move cost values
-	var value_array = ["current_damage_mod", "current_status_effect_mod"];
+	var value_array = ["current_damage_mod", "current_status_effect_mod", "current_height_mod", 
+	"current_width_mod", "current_attack_speed_mod", "current_Stun_Time_mod", "current_difference_mod"];
 	
 	
 	
@@ -1103,12 +1345,21 @@ function update_move_cost(){
 		}
 		counter+=1;
 	}
-	
+
 	
 	total_cost += parseInt(move_cost_div.getAttribute("base_cost")); //sets discount for starting position of move values
+	total_cost = total_cost * parseInt(move_cost_div.getAttribute("current_Attacks_mod")); //multiple results by the amount of attacks used after discount for proper costing
+	
 	
 	move_cost_div.setAttribute("current_cost", total_cost);
 	move_cost_div.innerText = "Cost = "+ move_cost_div.getAttribute("current_cost");
+}
+
+
+function save_current_move(){
+	//left off here.
+	//Compare the current move with the base move info. Check the cost and assign the cost value.
+	//then look at user's saved moves and see where it can be written and put it there.
 }
 
 move_creator_menu_icon(); //creates move creator menu
